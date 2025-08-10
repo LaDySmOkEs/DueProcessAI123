@@ -1,0 +1,72 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { BookOpen, CheckCircle, Star, Scale } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const categoryLabels = {
+  traffic_stops: "Traffic Stops",
+  home_searches: "Home Searches", 
+  arrests: "Arrests",
+  questioning: "Questioning",
+  protests: "Protests", 
+  general_rights: "General Rights"
+};
+
+const priorityColors = {
+  essential: "bg-red-100 text-red-800 border-red-200",
+  important: "bg-orange-100 text-orange-800 border-orange-200",
+  helpful: "bg-blue-100 text-blue-800 border-blue-200"
+};
+
+export default function RightsProgress({ modules, isLoading }) {
+  const completedModules = 0; // This would track actual user progress
+  const totalModules = modules.length;
+  const progressPercentage = totalModules > 0 ? (completedModules / totalModules) * 100 : 0;
+
+  return (
+    <Card className="border-0 shadow-lg bg-white">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <Scale className="w-5 h-5 text-green-600" />
+          Due Process Education
+        </CardTitle>
+        <p className="text-sm text-slate-600">Constitutional rights and procedural protections</p>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-6 w-3/4" />
+            {Array(3).fill(0).map((_, i) => (
+              <div key={i} className="p-3 border border-slate-200 rounded-lg">
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {/* Progress Overview */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-slate-700">Constitutional Knowledge</span>
+                <span className="text-sm text-slate-600">{completedModules}/{totalModules} modules</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+
+            {/* Featured Modules */}
+            <div className="space-y-3 mb-6">
+              <h3 className="font-semibold text-slate-900 text-sm">Priority Due Process Learning</h3>
+              {modules.slice(0, 4).map((module) => (
+                <div key={module.id} className="p-3 border border-slate-200 rounded-lg hover:shadow-sm transition-shadow">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-slate-900 text-sm">{module.title}</h4>
+                    <Badge 
+                      variant="secondary"
+ 
