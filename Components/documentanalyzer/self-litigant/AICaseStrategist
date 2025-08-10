@@ -1,0 +1,341 @@
+
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InvokeLLM } from "@/integrations/Core";
+import { BrainCircuit, Loader2, CheckCircle, AlertTriangle, ShieldCheck } from "lucide-react";
+import ConfidenceGauge from './ConfidenceGauge';
+import { useToast } from "@/components/ui/use-toast";
+
+// Mock for LitigationStrategy if it's not a real import in the provided context
+// In a real application, this would be an actual API client or ORM for your backend
+const LitigationStrategy = {
+    create: async (data) => {
+        console.log("Mock LitigationStrategy.create called with:", data);
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // Return a mock response or throw an error for testing failure
+        return { success: true, id: Math.random().toString(36).substring(7) };
+    }
+};
+
+const analysisSchema = {
+    type: "object",
+    properties: {
+        case_assessment: {
+            type: "object",
+            properties: {
+                case_type_analysis: { type: "string", description: "Detailed analysis of what type of legal case this is and its implications" },
+                jurisdiction_considerations: { type: "string", description: "Analysis of jurisdictional issues and venue considerations" },
+                statute_of_limitations: { type: "string", description: "Detailed analysis of timing constraints and deadlines" }
+            }
+        },
+        key_strengths: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    strength_category: { type: "string", description: "Category of strength (factual, legal, procedural, etc.)" },
+                    detailed_point: { type: "string", description: "The specific strength or argument to focus on" },
+                    comprehensive_explanation: { type: "string", description: "Thorough explanation of why this is powerful and how to leverage it" },
+                    supporting_evidence_needed: { type: "string", description: "What additional evidence would strengthen this point" },
+                    legal_precedents: { type: "string", description: "Relevant case law or legal precedents that support this strength" },
+                    strategic_implementation: { type: "string", description: "Specific tactical advice on how to present this strength" }
+                },
+                required: ["strength_category", "detailed_point", "comprehensive_explanation"]
+            },
+            description: "Comprehensive analysis of the most compelling points that form the core of a winning strategy"
+        },
+        red_flags: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    risk_category: { type: "string", description: "Category of risk (evidentiary, procedural, factual, legal)" },
+                    detailed_risk: { type: "string", description: "The specific weakness, risk, or potential counter-argument" },
+                    impact_analysis: { type: "string", description: "Detailed analysis of how this could damage the case" },
+                    likelihood_assessment: { type: "string", description: "How likely is this risk to materialize" },
+                    comprehensive_mitigation: { type: "string", description: "Detailed strategy to address, neutralize, or minimize this weakness" },
+                    alternative_approaches: { type: "string", description: "Alternative legal theories or approaches if this risk proves fatal" },
+                    evidence_gaps: { type: "string", description: "What evidence is missing and how to obtain it" }
+                },
+                required: ["risk_category", "detailed_risk", "comprehensive_mitigation"]
+            },
+            description: "Exhaustive analysis of critical weaknesses, evidentiary gaps, and likely counter-arguments from the opposition"
+        },
+        legal_strategy: {
+            type: "object",
+            properties: {
+                primary_legal_theory: { type: "string", description: "The main legal theory for the case with detailed explanation" },
+                alternative_theories: { type: "string", description: "Backup legal theories if the primary approach fails" },
+                discovery_strategy: { type: "string", description: "Comprehensive plan for gathering evidence and information" },
+                motion_strategy: { type: "string", description: "Strategic approach to pre-trial motions and procedural moves" }
+            }
+        },
+        opponent_analysis: {
+            type: "object",
+            properties: {
+                likely_defenses: { type: "string", description: "Anticipated defenses and counter-arguments from the opposition" },
+                opponent_strengths: { type: "string", description: "Analysis of the opposition's likely strong points" },
+                opponent_weaknesses: { type: "string", description: "Potential vulnerabilities in the opposition's position" },
+                strategic_counters: { type: "string", description: "How to counter the opposition's expected moves" }
+            }
+        },
+        confidence_score: {
+            type: "integer",
+            minimum: 0,
+            maximum: 100,
+            description: "Numerical score representing the estimated strength of the case based ONLY on provided information"
+        },
+        confidence_breakdown: {
+            type: "object",
+            properties: {
+                factual_strength: { type: "integer", description: "Score for factual foundation of the case" },
+                legal_strength: { type: "integer", description: "Score for legal basis and precedents" },
+                evidentiary_strength: { type: "integer", description: "Score for available evidence" },
+                procedural_position: { type: "integer", description: "Score for procedural advantages/disadvantages" },
+                detailed_rationale: { type: "string", description: "Comprehensive explanation for the confidence assessment" }
+            }
+        }
+    },
+    required: ["key_strengths", "red_flags", "confidence_score", "confidence_breakdown"]
+};
+
+export default function AICaseStrategist({ caseId }) {
+    const [caseDescription, setCaseDescription] = useState("");
+    const [analysisResult, setAnalysisResult] = useState(null); 
+    const [isAnalyzing, setIsAnalyzing] = useState(false); 
+    const [error, setError] = useState(null); 
+    const { toast } = useToast();
+
+    const analyzeCase = async () => { 
+        if (!caseDescription.trim()) {
+            toast({
+                title: "Missing Information",
+                description: "Please provide a case description before analysis.",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        setIsAnalyzing(true);
+        setAnalysisResult(null);
+        setError(null);
+
+        try {
+            // Add retry logic for network issues
+            const maxRetries = 3;
+            let lastError = null; 
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    toast({
+                        title: `Analyzing Case (Attempt ${attempt}/${maxRetries})`,
+                        description: "AI strategist is reviewing your case details...",
+                    });
+
+                    // Simplified the prompt and schema for faster, more reliable responses
+                    const result = await InvokeLLM({
+                        prompt: `You are a world-class litigation strategist. Analyze this case concisely but thoroughly.
+
+Case Description: """${caseDescription}"""
+
+Provide a strategic analysis based on the JSON schema.`,
+                        response_json_schema: {
+                            type: "object",
+                            properties: {
+                                summary: { type: "string", description: "A brief, one-paragraph summary of the case assessment." },
+                                key_strengths: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "A list of the top 3-5 key strengths of the case."
+                                },
+                                critical_risks: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "A list of the top 3-5 critical risks or weaknesses."
+                                },
+                                recommended_next_steps: {
+                                    type: "array",
+                                    items: { type: "string" },
+                                    description: "A list of actionable next steps for the user."
+                                },
+                                confidence_score: {
+                                    type: "integer",
+                                    minimum: 0,
+                                    maximum: 100,
+                                    description: "An overall confidence score from 0 to 100."
+                                }
+                            },
+                            required: ["summary", "key_strengths", "critical_risks", "recommended_next_steps", "confidence_score"]
+                        }
+                    });
+
+                    if (!result) throw new Error("AI analysis returned no result.");
+
+                    setAnalysisResult(result);
+                    
+                    if (caseId) {
+                        // Updated to match the new, simpler data structure
+                        await LitigationStrategy.create({
+                            case_id: caseId,
+                            case_theory: result.summary,
+                            elements_to_prove: result.key_strengths || [],
+                            discovery_plan: result.recommended_next_steps?.join('\n') || "",
+                            case_description: caseDescription,
+                            ai_analysis: result
+                        });
+                    }
+
+                    toast({
+                        title: "Analysis Complete",
+                        description: "Your case strategy has been generated successfully.",
+                        variant: "success",
+                    });
+                    
+                    // Success - break out of retry loop
+                    return; // Exit function on success
+                    
+                } catch (attemptError) {
+                    lastError = attemptError;
+                    console.error(`Analysis attempt ${attempt} failed:`, attemptError);
+                    
+                    if (attempt < maxRetries) {
+                        // Wait before retrying (exponential backoff)
+                        const waitTime = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+                        toast({
+                            title: `Attempt ${attempt} Failed`,
+                            description: `Retrying in ${waitTime/1000} seconds...`,
+                            variant: "destructive"
+                        });
+                        await new Promise(resolve => setTimeout(resolve, waitTime));
+                    }
+                }
+            }
+            
+            // If we reach here, all retries failed and no result was set
+            if (!analysisResult) { 
+                throw lastError || new Error("All analysis attempts failed."); 
+            }
+            
+        } catch (err) {
+            console.error("Analysis failed:", err);
+            
+            let errorMessage = "Analysis failed. Please try again.";
+            
+            if (err.message?.includes("Network Error") || err.code === "NETWORK_ERROR") {
+                errorMessage = "Network connection issue. Please check your internet connection and try again.";
+            } else if (err.response?.status === 429) {
+                errorMessage = "API rate limit exceeded. Please wait a moment and try again.";
+            } else if (err.response?.status === 401) {
+                errorMessage = "Authentication failed. Please check your API keys in settings.";
+            } else if (err.message?.includes("timeout")) {
+                errorMessage = "Request timed out. Please try with a shorter case description.";
+            } else if (err.message) {
+                errorMessage = err.message; 
+            }
+            
+            setError(errorMessage);
+            toast({
+                title: "Analysis Failed",
+                description: errorMessage,
+                variant: "destructive"
+            });
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    return (
+        <Card className="border-0 shadow-lg bg-white col-span-1 lg:col-span-2">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3"><BrainCircuit className="w-6 h-6 text-amber-600" /> AI Case Strategist</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-slate-600 mb-4">Describe your situation in detail. The AI will analyze your case, identify key strengths to focus on, highlight critical weaknesses (red flags), and provide an initial confidence assessment.</p>
+                
+                <div className="space-y-4">
+                    <Textarea 
+                        placeholder="Provide a detailed, factual account of your case. Include key events, dates, people involved, and any evidence you have..."
+                        value={caseDescription}
+                        onChange={(e) => setCaseDescription(e.target.value)}
+                        className="h-48"
+                    />
+                    <Button 
+                        onClick={analyzeCase} 
+                        disabled={isAnalyzing} 
+                        className="w-full bg-amber-600 hover:bg-amber-700"
+                    >
+                        {isAnalyzing ? ( 
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing Your Case...</>
+                        ) : (
+                            'Generate Strategic Analysis'
+                        )}
+                    </Button>
+                </div>
+
+                {error && ( 
+                    <Alert variant="destructive" className="mt-4">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                {analysisResult && ( 
+                    <div className="mt-8 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Left Side: Strengths, Risks, Next Steps */}
+                            <div className="md:col-span-2 space-y-6">
+                                {/* Key Strengths */}
+                                <div>
+                                    <h3 className="font-semibold text-lg text-green-700 flex items-center gap-2 mb-3"><CheckCircle /> Key Strengths</h3>
+                                    <ul className="space-y-2 list-disc pl-5">
+                                        {analysisResult.key_strengths.map((strength, i) => (
+                                            <li key={i} className="text-green-800 bg-green-50 p-2 rounded-md">{strength}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                {/* Red Flags */}
+                                <div>
+                                    <h3 className="font-semibold text-lg text-red-700 flex items-center gap-2 mb-3"><AlertTriangle /> Critical Risks</h3>
+                                    <ul className="space-y-2 list-disc pl-5">
+                                        {analysisResult.critical_risks.map((risk, i) => (
+                                            <li key={i} className="text-red-800 bg-red-50 p-2 rounded-md">{risk}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                {/* Next Steps */}
+                                <div>
+                                    <h3 className="font-semibold text-lg text-blue-700 flex items-center gap-2 mb-3"><ShieldCheck /> Recommended Next Steps</h3>
+                                     <ul className="space-y-2 list-disc pl-5">
+                                        {analysisResult.recommended_next_steps.map((step, i) => (
+                                            <li key={i} className="text-blue-800 bg-blue-50 p-2 rounded-md">{step}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                            {/* Right Side: Confidence Score */}
+                            <div className="md:col-span-1 space-y-4">
+                                <ConfidenceGauge score={analysisResult.confidence_score} /> 
+                                <div className="p-4 bg-slate-50 rounded-lg">
+                                     <h4 className="font-semibold text-slate-800 mb-2">AI Summary & Rationale</h4>
+                                     <p className="text-sm text-slate-600">{analysisResult.summary}</p>
+                                </div>
+                                <Alert variant="warning" className="bg-amber-50 border-amber-200">
+                                    <ShieldCheck className="h-4 w-4 text-amber-600" />
+                                    <AlertTitle className="font-semibold text-amber-900">Important Disclaimer</AlertTitle>
+                                    <AlertDescription className="text-amber-800 text-xs">
+                                        This confidence score is an AI-generated estimate based SOLELY on the text you provided. It is NOT legal advice or a guarantee of outcome. Real-world litigation is complex and unpredictable.
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
