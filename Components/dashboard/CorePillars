@@ -1,0 +1,62 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { Shield, BookOpen, Users } from "lucide-react";
+
+const pillars = [
+  {
+    title: "Civil Liberties Defense Kit",
+    icon: Shield,
+    description: "Your active toolkit for self-defense. AI-powered case strategy, document generation, and courtroom preparation to build a powerful defense.",
+    link: createPageUrl("SelfLitigantCenter"),
+    color: "text-blue-600",
+    buttonText: "Open Defense Kit"
+  },
+  {
+    title: "Community Watchdog Tools",
+    icon: Users,
+    description: "Hold power accountable. Investigate patterns of misconduct, track violations, and join forces with others to drive systemic change.",
+    link: createPageUrl("ClassActionRegistry"),
+    color: "text-red-600",
+    buttonText: "Access Watchdog Tools"
+  },
+  {
+    title: "Legal Rights Navigator",
+    icon: BookOpen,
+    description: "Knowledge is power. Learn your constitutional rights, understand legal procedures, and access guides to navigate the system with confidence.",
+    link: createPageUrl("KnowYourRights"),
+    color: "text-amber-600",
+    buttonText: "Learn Your Rights"
+  }
+];
+
+export default function CorePillars() {
+  return (
+    <div className="mb-8">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2 text-center">Three Pillars of Due Process AI</h2>
+        <p className="text-slate-600 mb-6 text-center max-w-2xl mx-auto">Our platform is built on three core principles to provide a comprehensive solution for defending your rights and ensuring justice.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {pillars.map((pillar) => (
+                <Card key={pillar.title} className="border-0 shadow-lg bg-white flex flex-col">
+                    <CardHeader className="items-center text-center">
+                        <div className={`p-4 bg-slate-100 rounded-full mb-4`}>
+                            <pillar.icon className={`w-8 h-8 ${pillar.color}`} />
+                        </div>
+                        <CardTitle className="text-lg">{pillar.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-grow text-center">
+                        <p className="text-sm text-slate-600">{pillar.description}</p>
+                    </CardContent>
+                    <div className="p-6 pt-0">
+                        <Link to={pillar.link}>
+                            <Button variant="outline" className="w-full">{pillar.buttonText}</Button>
+                        </Link>
+                    </div>
+                </Card>
+            ))}
+        </div>
+    </div>
+  );
+}
