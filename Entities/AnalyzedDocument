@@ -1,0 +1,42 @@
+{
+  "name": "AnalyzedDocument",
+  "type": "object",
+  "properties": {
+    "document_name": {
+      "type": "string",
+      "description": "Original filename or user-provided name"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "File extension/type (pdf, jpg, png, etc.)"
+    },
+    "file_size": {
+      "type": "integer",
+      "description": "File size in bytes"
+    },
+    "collection_id": {
+      "type": "string",
+      "description": "ID of the DocumentCollection this belongs to"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "police_report",
+        "court_filing",
+        "evidence_photo",
+        "correspondence",
+        "witness_statement",
+        "legal_motion",
+        "discovery_response",
+        "other"
+      ],
+      "description": "Classification of document type"
+    },
+    "analysis_summary": {
+      "type": "string",
+      "description": "AI-generated summary of document contents"
+    },
