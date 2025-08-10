@@ -1,0 +1,207 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Shield, FileText, Scale, AlertTriangle, Eye, Lock, Users, Gavel } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+
+const AntiCorruptionStep = ({ number, title, description, tools, status = "available" }) => (
+    <Card className="border-0 shadow-lg bg-white">
+        <CardHeader>
+            <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {number}
+                </div>
+                <div>
+                    <CardTitle className="text-lg">{title}</CardTitle>
+                    <p className="text-sm text-slate-600 mt-1">{description}</p>
+                </div>
+            </div>
+        </CardHeader>
+        <CardContent>
+            <div className="space-y-3">
+                {tools.map((tool, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                            <tool.icon className="w-5 h-5 text-slate-600" />
+                            <div>
+                                <p className="font-medium text-slate-900">{tool.name}</p>
+                                <p className="text-xs text-slate-600">{tool.description}</p>
+                            </div>
+                        </div>
+                        {tool.link ? (
+                            <Link to={createPageUrl(tool.link)}>
+                                <Button size="sm" variant="outline">Access</Button>
+                            </Link>
+                        ) : (
+                            <Badge variant="secondary" className="text-xs">
+                                {tool.status || "Available"}
+                            </Badge>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </CardContent>
+    </Card>
+);
+
+export default function AntiCorruptionCenter() {
+    const [selectedPhase, setSelectedPhase] = useState('documentation');
+
+    const phases = {
+        documentation: {
+            title: "Document Evidence Systematically",
+            steps: [
+                {
+                    number: 1,
+                    title: "Secure Evidence Collection",
+                    description: "Gather concrete proof with proper chain of custody",
+                    tools: [
+                        {
+                            name: "Document Analyzer",
+                            description: "AI analysis of contracts, emails, and financial records",
+                            icon: FileText,
+                            link: "DocumentAnalyzer"
+                        },
+                        {
+                            name: "Evidence Preservation",
+                            description: "Timestamp and secure evidence with cryptographic integrity",
+                            icon: Lock,
+                            link: "EvidencePreservation"
+                        },
+                        {
+                            name: "Timeline Builder",
+                            description: "Create chronological evidence chains",
+                            icon: Scale,
+                            status: "Coming Soon"
+                        }
+                    ]
+                }
+            ]
+        },
+        institutional: {
+            title: "Engineer Institutional Accountability",
+            steps: [
+                {
+                    number: 2,
+                    title: "Internal Reporting Channels",
+                    description: "Document attempts through proper institutional channels",
+                    tools: [
+                        {
+                            name: "Whistleblower Documentation",
+                            description: "Template for protected disclosures",
+                            icon: Shield,
+                            link: "LegalDraftsman"
+                        },
+                        {
+                            name: "FOIA Request Builder",
+                            description: "Force transparency through public records",
+                            icon: Eye,
+                            link: "PublicRecordsRequest"
+                        },
+                        {
+                            name: "Complaint Tracking",
+                            description: "Maintain paper trail of all reports",
+                            icon: FileText,
+                            status: "Coming Soon"
+                        }
+                    ]
+                }
+            ]
+        },
+        legal: {
+            title: "Strategic Legal Action",
+            steps: [
+                {
+                    number: 3,
+                    title: "Legal Strategy Development",
+                    description: "Build comprehensive legal case with AI assistance",
+                    tools: [
+                        {
+                            name: "AI Case Strategist",
+                            description: "Analyze legal options and build strategy",
+                            icon: Scale,
+                            link: "SelfLitigantCenter"
+                        },
+                        {
+                            name: "Civil Rights Complaint",
+                            description: "§1983 actions for constitutional violations",
+                            icon: Gavel,
+                            link: "CivilRightsComplaintBuilder"
+                        },
+                        {
+                            name: "Class Action Registry",
+                            description: "Connect with others facing similar targeting",
+                            icon: Users,
+                            link: "ClassActionRegistry"
+                        }
+                    ]
+                }
+            ]
+        },
+        accountability: {
+            title: "Public Accountability",
+            steps: [
+                {
+                    number: 4,
+                    title: "Verified Disclosure",
+                    description: "Strategic public disclosure with legal protections",
+                    tools: [
+                        {
+                            name: "Media Package Builder",
+                            description: "Prepare verified evidence for journalism",
+                            icon: FileText,
+                            status: "Coming Soon"
+                        },
+                        {
+                            name: "Whistleblower Protection Guide",
+                            description: "Know your legal protections before disclosure",
+                            icon: Shield,
+                            status: "Coming Soon"
+                        },
+                        {
+                            name: "Anonymous Disclosure Tools",
+                            description: "Secure channels for protected disclosure",
+                            icon: Lock,
+                            status: "Coming Soon"
+                        }
+                    ]
+                }
+            ]
+        }
+    };
+
+    return (
+        <div className="p-6 space-y-8">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-xl flex items-center justify-center">
+                            <Shield className="w-7 h-7 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-bold text-slate-900">Anti-Corruption Command Center</h1>
+                            <p className="text-slate-600 mt-1">Systematic tools for exposing and combating institutional corruption</p>
+                        </div>
+                    </div>
+                    
+                    <Alert className="bg-red-50 border-red-200 mb-6">
+                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                        <AlertDescription className="text-red-800">
+                            <strong>Constitutional Foundation:</strong> This center provides tools for exercising your First Amendment right to petition for redress of grievances and expose government corruption through legal channels.
+                        </AlertDescription>
+                    </Alert>
+                </div>
+
+                {/* Phase Navigation */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                    {Object.entries(phases).map(([key, phase]) => (
+                        <Button
+                            key={key}
+                            variant={selectedPhase === key ? 'default' : 'outline'}
+                            onClick={() => setSelectedPhase(key)}
+                            className="flex-1 min-w-fit"
+ 
