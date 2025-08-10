@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "verify-deployment": "node scripts/verify-deployment.js",
+    "pre-deploy": "npm run verify-deployment && npm run build"
   },
   "dependencies": {
     "lucide-react": "^0.365.0",
