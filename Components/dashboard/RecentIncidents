@@ -1,0 +1,72 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { format } from "date-fns";
+import { AlertTriangle, MapPin, Clock, ExternalLink, Scale } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const severityColors = {
+  minor: "bg-green-100 text-green-800 border-green-200",
+  moderate: "bg-yellow-100 text-yellow-800 border-yellow-200", 
+  serious: "bg-orange-100 text-orange-800 border-orange-200",
+  severe: "bg-red-100 text-red-800 border-red-200"
+};
+
+const encounterTypeLabels = {
+  traffic_stop: "Traffic Stop",
+  pedestrian_stop: "Pedestrian Stop", 
+  home_visit: "Home Visit",
+  arrest: "Arrest",
+  questioning: "Questioning",
+  other: "Other"
+};
+
+export default function RecentIncidents({ interactions, isLoading }) {
+  return (
+    <Card className="border-0 shadow-lg bg-white">
+      <CardHeader className="pb-4">
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <Scale className="w-5 h-5 text-blue-600" />
+            Recent Due Process Reviews
+          </CardTitle>
+          <Link to={createPageUrl("MyIncidents")}>
+            <Button variant="outline" size="sm" className="gap-2">
+              View All <ExternalLink className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+        <p className="text-sm text-slate-600">Procedural compliance audits of government interactions</p>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array(3).fill(0).map((_, i) => (
+              <div key={i} className="p-4 border border-slate-200 rounded-lg">
+                <div className="flex justify-between items-start mb-3">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+            ))}
+          </div>
+        ) : interactions.length === 0 ? (
+          <div className="text-center py-12">
+            <Scale className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No Due Process Audits</h3>
+            <p className="text-slate-600 mb-4">Begin documenting government interactions to ensure procedural compliance</p>
+            <Link to={createPageUrl("LogInteraction")}>
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                Start First Audit
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {interactions.slice(0, 5).map((interaction) => (
+ 
