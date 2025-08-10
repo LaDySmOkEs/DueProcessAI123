@@ -1,7 +1,9 @@
 
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { Link, useLocation } from "./Components/RouterCompat";
+import { createPageUrl } from "@/functions/index";
 import {
   Shield,
   BookOpen,
@@ -30,7 +32,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import UsageTracker from "./components/subscription/UsageTracker";
+import UsageTracker from "./Components/subscription/UsageTracker.tsx";
 
 // REBUILT navigation structure around the three core pillars
 const navigationSections = {

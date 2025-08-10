@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { PoliceInteraction, KnowYourRightsModule } from "@/entities/all";
-import { Shield, BookOpen, FileText, AlertTriangle, TrendingUp, Users } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+"use client";
 
-import StatsCard from "../components/dashboard/StatsCard";
-import RecentIncidents from "../components/dashboard/RecentIncidents";
-import RightsProgress from "../components/dashboard/RightsProgress";
-import QuickActions from "../components/dashboard/QuickActions";
-import CorePillars from "../components/dashboard/CorePillars";
+import React, { useState, useEffect } from "react";
+import { Shield, BookOpen, FileText, AlertTriangle, TrendingUp, Users } from "lucide-react";
+import { Link } from "@/components/RouterCompat";
+import { createPageUrl } from "@/functions/index";
+
+import StatsCard from "@/components/dashboard/StatsCard.tsx";
+import RecentIncidents from "@/components/dashboard/RecentIncidents.tsx";
+import RightsProgress from "@/components/dashboard/RightsProgress.tsx";
+import QuickActions from "@/components/dashboard/QuickActions.tsx";
+import CorePillars from "@/components/dashboard/CorePillars.tsx";
 
 export default function Dashboard() {
   const [interactions, setInteractions] = useState([]);

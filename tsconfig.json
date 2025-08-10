@@ -21,7 +21,16 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/*": ["./Components/*"],
+      "@/entities/*": ["./Entities/*"],
+      "@/functions/*": ["./Functions/*"],
+      "@/pages/*": ["./Pages/*"],
+      "@/utils": ["./Functions/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
