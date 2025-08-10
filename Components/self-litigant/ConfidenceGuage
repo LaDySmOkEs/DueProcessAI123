@@ -1,0 +1,64 @@
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function ConfidenceGauge({ score }) {
+    const getColor = (score) => {
+        if (score >= 80) return 'text-green-600';
+        if (score >= 60) return 'text-yellow-600'; 
+        if (score >= 40) return 'text-orange-600';
+        return 'text-red-600';
+    };
+
+    const getBackgroundColor = (score) => {
+        if (score >= 80) return 'from-green-500 to-green-600';
+        if (score >= 60) return 'from-yellow-500 to-yellow-600';
+        if (score >= 40) return 'from-orange-500 to-orange-600';
+        return 'from-red-500 to-red-600';
+    };
+
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (score / 100) * circumference;
+
+    return (
+        <Card className="border-0 shadow-sm bg-white">
+            <CardContent className="p-6 text-center">
+                <h3 className="font-semibold text-slate-900 mb-4">Case Confidence Score</h3>
+                
+                <div className="relative w-32 h-32 mx-auto mb-4">
+                    <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                        {/* Background circle */}
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r={radius}
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            className="text-slate-200"
+                        />
+                        {/* Progress circle */}
+                        <circle
+                            cx="60"
+                            cy="60"
+                            r={radius}
+                            stroke="url(#gradient)"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeDasharray={strokeDasharray}
+                            strokeDashoffset={strokeDashoffset}
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-out"
+                        />
+                        {/* Gradient definition */}
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" className={`stop-color-gradient ${getBackgroundColor(score).split(' ')[0].replace('from-', '')}`} />
+                                <stop offset="100%" className={`stop-color-gradient ${getBackgroundColor(score).split(' ')[1].replace('to-', '')}`} />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    
+                    {/* Score text in center */}
+ 
