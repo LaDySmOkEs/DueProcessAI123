@@ -1,0 +1,90 @@
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Phone, Camera, Shield, AlertTriangle, FileText } from "lucide-react";
+
+export default function EmergencyTools() {
+    const handleEmergencyCall = () => {
+        window.location.href = 'tel:911';
+    };
+
+    const handleACLUCall = () => {
+        window.location.href = 'tel:2125492500';
+    };
+
+    const handleLegalAidCall = () => {
+        window.location.href = 'tel:211';
+    };
+
+    return (
+        <Alert className="bg-red-50 border-red-200 mb-8">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            <AlertDescription>
+                <div className="flex flex-col space-y-4">
+                    <div>
+                        <h3 className="font-bold text-red-900 mb-2">Emergency Constitutional Rights Protection</h3>
+                        <p className="text-red-800 text-sm mb-4">
+                            If you are currently experiencing a constitutional violation or police misconduct, use these emergency tools:
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <Button 
+                            onClick={handleEmergencyCall}
+                            className="bg-red-600 hover:bg-red-700 text-white gap-2 h-auto py-3"
+                        >
+                            <Phone className="w-4 h-4" />
+                            <div className="text-left">
+                                <div className="font-bold">Emergency</div>
+                                <div className="text-xs">Call 911</div>
+                            </div>
+                        </Button>
+
+                        <Button 
+                            onClick={handleACLUCall}
+                            variant="outline" 
+                            className="border-red-200 hover:bg-red-50 gap-2 h-auto py-3"
+                        >
+                            <Shield className="w-4 h-4 text-red-600" />
+                            <div className="text-left">
+                                <div className="font-bold text-red-900">ACLU</div>
+                                <div className="text-xs text-red-700">Rights Hotline</div>
+                            </div>
+                        </Button>
+
+                        <Button 
+                            onClick={handleLegalAidCall}
+                            variant="outline" 
+                            className="border-red-200 hover:bg-red-50 gap-2 h-auto py-3"
+                        >
+                            <FileText className="w-4 h-4 text-red-600" />
+                            <div className="text-left">
+                                <div className="font-bold text-red-900">Legal Aid</div>
+                                <div className="text-xs text-red-700">Dial 211</div>
+                            </div>
+                        </Button>
+
+                        <Button 
+                            variant="outline" 
+                            className="border-red-200 hover:bg-red-50 gap-2 h-auto py-3"
+                            onClick={() => {
+                                alert("RECORD EVERYTHING: Use your phone to video/audio record the interaction. State clearly 'I do not consent to this search/seizure' and 'I am exercising my right to remain silent.'");
+                            }}
+                        >
+                            <Camera className="w-4 h-4 text-red-600" />
+                            <div className="text-left">
+                                <div className="font-bold text-red-900">Record</div>
+                                <div className="text-xs text-red-700">Document Now</div>
+                            </div>
+                        </Button>
+                    </div>
+
+                    <div className="text-xs text-red-700 bg-red-100 p-2 rounded">
+                        <strong>Know Your Rights:</strong> You have the right to remain silent. You have the right to refuse consent to searches. 
+                        You have the right to record police interactions in public. Ask "Am I free to leave?" if detained.
+                    </div>
+                </div>
+            </AlertDescription>
+        </Alert>
+ 
