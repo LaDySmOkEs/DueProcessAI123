@@ -1,8 +1,10 @@
+"use client";
+
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { Link } from "@/components/RouterCompat";
+import { createPageUrl } from "@/functions/index";
 import { Plus, BookOpen, AlertTriangle, Gavel } from "lucide-react";
 
 export default function QuickActions() {

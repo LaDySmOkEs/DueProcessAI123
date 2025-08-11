@@ -2,6 +2,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import Layout from '../Layout'; // Import the Layout.js from root directory
+import { RouterProvider } from '../Components/RouterCompat';
 
 export const metadata: Metadata = {
   title: 'Due Process AI',
@@ -12,9 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Layout currentPageName="Home">
-          {children}
-        </Layout>
+        <RouterProvider>
+          <Layout currentPageName="Home">
+            {children}
+          </Layout>
+        </RouterProvider>
       </body>
     </html>
   );
