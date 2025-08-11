@@ -1,12 +1,25 @@
 {
   "name": "due-process-ai",
   "version": "1.0.0",
+  "description": "A Next.js application for due process management and AI integration",
+  "keywords": ["nextjs", "react", "typescript", "due-process", "ai", "legal"],
+  "author": "LaDySmOkEs",
+  "homepage": "https://github.com/LaDySmOkEs/DueProcessAI123",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LaDySmOkEs/DueProcessAI123.git"
+  },
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy-check": "./scripts/deploy-check.sh"
   },
   "dependencies": {
     "lucide-react": "^0.365.0",
@@ -19,6 +32,7 @@
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.3"
+    "eslint-config-next": "14.2.3",
+    "typescript": "^5.4.5"
   }
 }
